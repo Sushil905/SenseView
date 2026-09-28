@@ -1,0 +1,19 @@
+# Stack: RAF-DB frame-level ViT-Base initialization followed by multiview LSTM fine-tuning.
+rafdb_image_root: data/raw/rafdb/aligned
+rafdb_annotations: data/raw/rafdb/list_patition_label.txt
+rafdb_checkpoint: runs/checkpoints/rafdb_vit_base.pt
+manifest: data/processed/multiview_train.csv
+validation_manifest: data/processed/multiview_val.csv
+data_root: .
+output: runs/checkpoints/fer.pt
+visual_encoder: vit_base_patch16_224
+temporal_module: lstm
+view_selection: lowest_absolute_yaw
+session_classifier: svm
+epochs: 12
+batch_size: 8
+learning_rate: 0.00002
+image_size: 224
+tiny: false
+views: [cam_01, cam_02, cam_03, cam_04]
+seed: 42

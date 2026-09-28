@@ -1,0 +1,5 @@
+subject_id,session_id,timestep,view_id,image_path,expression
+S001,session_001,0,cam_01,data/crops/S001/session_001/000000_cam_01.jpg,happiness
+S001,session_001,0,cam_02,data/crops/S001/session_001/000000_cam_02.jpg,happiness
+S001,session_001,0,cam_03,data/crops/S001/session_001/000000_cam_03.jpg,happiness
+S001,session_001,0,cam_04,data/crops/S001/session_001/000000_cam_04.jpg,happiness

@@ -1,0 +1,6 @@
+# Batch inference for a synchronized multi-view session.
+manifest: data/processed/multiview_val.csv
+data_root: .
+checkpoint: runs/checkpoints/fer.pt
+output: data/features/session_features.csv
+view_selection: lowest_absolute_yaw

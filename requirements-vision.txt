@@ -1,0 +1,3 @@
+-r requirements.txt
+# Optional RetinaFace integration for raw multi-view face crops and yaw proxies.
+retina-face>=0.0.17

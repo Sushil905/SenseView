@@ -1,0 +1,23 @@
+# RAF-DB supplies single aligned face images and frame-level FER labels.
+rafdb:
+  image_root: data/raw/rafdb/aligned
+  annotations: data/raw/rafdb/list_patition_label.txt
+  split_names: [train, test]
+  use_detector_on_aligned_images: false
+# LSTM training/inference requires a separate synchronized multi-camera clip manifest.
+multiview_sequences:
+  manifest: data/processed/multiview_manifest.csv
+  image_root: .
+  yaw_column: yaw_degrees
+  require_subject_disjoint_split: true
+# Paths below are relative to data_root.
+data_root: .
+manifest: data/labels.csv
+views: [cam_01, cam_02, cam_03, cam_04]
+image_size: 224
+required_columns: [subject_id, session_id, timestep, view_id, image_path, expression, yaw_degrees]
+expression_classes: [neutral, happiness, sadness, anger, fear, disgust, surprise]
+rafdb_label_map: {1: surprise, 2: fear, 3: disgust, 4: happiness, 5: sadness, 6: anger, 7: neutral}
+privacy:
+  store_direct_identifiers: false
+  require_consent_and_ethics_review: true

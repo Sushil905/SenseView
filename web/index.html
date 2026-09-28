@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080b1d"><title>SenseView — Research workspace</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="topbar"><div class="wrap nav">
+    <a class="brand" href="#overview"><span class="brand-icon">S</span>SenseView</a>
+    <nav class="section-nav" aria-label="Workspace sections">
+      <button class="nav-tab active" data-section="overview">Overview</button>
+      <button class="nav-tab" data-section="dataset">Dataset</button>
+      <button class="nav-tab" data-section="models">Models</button>
+      <button class="nav-tab" data-section="analyze">Analyze</button>
+      <button class="nav-tab" data-section="results">Results</button>
+      <button class="nav-tab" data-section="history">History</button>
+    </nav>
+    <div class="nav-tools"><button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch to daylight theme"><span class="theme-icon">☼</span><span class="theme-name">Daylight</span></button><span id="health" class="status"><i></i>Connecting…</span></div>
+  </div></header>
+
+  <section id="overview" class="app-section active">
+   <div class="hero"><div class="wrap hero-inner"><div>
+      <span class="eyebrow">MULTI-VIEW RESEARCH WORKSPACE</span>
+      <h1>Follow the signal over time.</h1>
+      <p>Explore the workflow from RAF-DB frame training to synchronized multi-camera analysis, with each project feature grouped into its own section.</p>
+      <button class="btn btn-primary hero-cta" data-go="analyze">Start an analysis&nbsp; →</button>
+    </div><aside class="hero-note"><span class="note-icon">✳</span><small>LOCAL RESEARCH PROTOTYPE</small><strong>Six focused sections</strong><p>Dataset setup, model pipeline, analysis, results, and recent run history.</p></aside></div></div>
+   <div class="wrap overview-summary">
+    <div class="overview-title"><div><span class="kicker">Workspace map</span><h2>Everything in its place</h2></div><span class="overview-subtitle">Choose a section to continue</span></div>
+    <div class="shortcut-grid">
+      <button class="panel shortcut-card" data-go="dataset"><span>01 · DATA</span><strong>Dataset setup</strong><small>RAF-DB and clip manifest status</small><b>Open dataset →</b></button>
+      <button class="panel shortcut-card" data-go="models"><span>02 · PIPELINE</span><strong>Model stack</strong><small>RetinaFace, ViT, yaw, LSTM, SVM</small><b>View models →</b></button>
+      <button class="panel shortcut-card" data-go="analyze"><span>03 · WORKSPACE</span><strong>Analyze a clip</strong><small>Upload synchronized frames</small><b>Start analysis →</b></button>
+      <button class="panel shortcut-card" data-go="history"><span>04 · OUTPUTS</span><strong>Recent results</strong><small>Local result summaries only</small><b>Open history →</b></button>
+    </div>
+   </div>
+  </section>
+
+  <main class="wrap section-shell">
+    <section id="dataset" class="app-section section-page">
+      <div class="workspace-head"><div><span class="kicker">01 / Data</span><h2>Dataset workspace</h2><p>Check RAF-DB setup and understand the synchronized clip input.</p></div><span id="rafdb-status" class="privacy-chip">Checking RAF-DB…</span></div>
+      <div class="card-grid">
+        <article class="panel feature-card"><span class="feature-icon">▧</span><span class="feature-label">FRAME-LEVEL FER</span><h3>RAF-DB</h3><p>Fine-tune the seven-class ViT frame model using the aligned image directory and partition label list.</p><div class="meta-line"><span>Images</span><code>data/raw/rafdb/aligned/</code></div><div class="meta-line"><span>Annotations</span><code>list_patition_label.txt</code></div><div class="card-foot" id="rafdb-detail">Dataset files are not bundled.</div></article>
+        <article class="panel feature-card"><span class="feature-icon">▦</span><span class="feature-label">TEMPORAL MULTI-VIEW</span><h3>Synchronized clips</h3><p>The LSTM stage needs multiple timestamps from each camera. Each timestep must have all four views.</p><div class="meta-line"><span>Manifest</span><code>subject_id · session_id · timestep</code></div><div class="meta-line"><span>Required view data</span><code>view_id · image_path · yaw_degrees</code></div><div class="card-foot">RAF-DB stills do not create video sequences.</div></article>
+      </div>
+      <div class="panel info-card dataset-guide"><h3>Dataset actions</h3><div class="guide-actions"><a class="btn btn-quiet" href="/docs" target="_blank" rel="noreferrer">Open API docs ↗</a><button class="btn btn-quiet" data-sample>Try synthetic sample</button></div><p class="privacy-copy">Keep source images local and de-identified. Add RAF-DB yourself under its dataset terms.</p></div>
+    </section>
+
+    <section id="models" class="app-section section-page">
+      <div class="workspace-head"><div><span class="kicker">02 / Pipeline</span><h2>Model pipeline</h2><p>Each block has one job, from face crops through session-level classification.</p></div><span class="privacy-chip">ViT-Base + LSTM + SVM</span></div>
+      <div class="card-grid model-grid">
+        <article class="panel feature-card"><span class="feature-label">01 · FACE DETECTOR</span><h3>RetinaFace</h3><p>Detects and crops faces; five landmarks provide a rough yaw proxy for view ranking.</p><div class="model-state" id="retina-status">Optional dependency</div></article>
+        <article class="panel feature-card"><span class="feature-label">02 · FRAME MODEL</span><h3>ViT-Base / 16</h3><p>Maps each face crop to a seven-expression score distribution. Fine-tune the frame model on RAF-DB.</p><div class="model-state">224 × 224 input · 7 expression classes</div></article>
+        <article class="panel feature-card"><span class="feature-label">03 · VIEW FUSION</span><h3>Lowest absolute yaw</h3><p>Selects the most frontal available camera view independently at every synchronized timestep.</p><div class="model-state">Requires yaw for each view</div></article>
+        <article class="panel feature-card"><span class="feature-label">04 · TEMPORAL MODEL</span><h3>Bidirectional LSTM</h3><p>Models the selected frame embeddings over time and returns per-timestep expression scores.</p><div class="model-state" id="temporal-status">Checking checkpoint…</div></article>
+        <article class="panel feature-card"><span class="feature-label">05 · SESSION CLASSIFIER</span><h3>SVM</h3><p>Optional generic classifier over descriptive session features. Training holds out subjects.</p><div class="model-state" id="svm-status">No SVM checkpoint loaded</div></article>
+        <article class="panel feature-card"><span class="feature-label">06 · SERVING</span><h3>FastAPI</h3><p>Serves this local dashboard, accepts synchronized image sequences, and provides interactive API docs.</p><div class="model-state">Local API · <a href="/docs">/docs ↗</a> · <span id="clip-status">Checking clips…</span></div></article>
+      </div>
+      <aside class="panel info-card caution"><h3>Research scope</h3><p>These expression outputs are not diagnostic and must not be used to label a child or guide care. RAF-DB and synthetic results do not establish clinical validity.</p></aside>
+    </section>
+
+    <section id="analyze" class="app-section section-page">
+      <div class="workspace-head"><div><span class="kicker">03 / Analyze</span><h2>Run a synchronized clip</h2><p>Choose matching timestamp-sorted sequences from all four cameras.</p></div><span class="privacy-chip">◉ &nbsp;Local processing</span></div>
+      <div class="workspace">
+        <section class="panel"><div class="panel-head"><h3>Camera sequences</h3><span class="step-label">INPUT</span></div><div class="input-body"><p class="helper">Add the same number of JPG, PNG, or WebP frames for each camera, in timestamp order.</p><form id="predict-form"><div class="upload-grid">
+          <label class="upload"><span class="plus">＋</span><span class="cam">CAMERA 01</span><span class="file-state">Choose synchronized frames</span><img alt="Camera 1 preview"><input required multiple type="file" name="cam_01" accept="image/png,image/jpeg,image/webp"></label>
+          <label class="upload"><span class="plus">＋</span><span class="cam">CAMERA 02</span><span class="file-state">Choose synchronized frames</span><img alt="Camera 2 preview"><input required multiple type="file" name="cam_02" accept="image/png,image/jpeg,image/webp"></label>
+          <label class="upload"><span class="plus">＋</span><span class="cam">CAMERA 03</span><span class="file-state">Choose synchronized frames</span><img alt="Camera 3 preview"><input required multiple type="file" name="cam_03" accept="image/png,image/jpeg,image/webp"></label>
+          <label class="upload"><span class="plus">＋</span><span class="cam">CAMERA 04</span><span class="file-state">Choose synchronized frames</span><img alt="Camera 4 preview"><input required multiple type="file" name="cam_04" accept="image/png,image/jpeg,image/webp"></label>
+        </div><div class="input-actions"><button class="btn btn-primary" type="submit" id="run-btn" disabled>Analyze synchronized clip&nbsp; →</button><button class="btn btn-quiet" type="button" id="sample-btn">Try sample</button></div></form><p class="privacy-copy">Images are processed for this request and are not saved as project files. Use synthetic images for the bundled demo.</p></div></section>
+        <aside class="panel info-card analyze-help"><h3>Before you run</h3><div class="check-line">✓ &nbsp;One frame per camera for every timestep</div><div class="check-line">✓ &nbsp;Same number and timestamp order per camera</div><div class="check-line">✓ &nbsp;ViT/LSTM checkpoint and RetinaFace installed for real clip inference</div><button class="btn btn-quiet" data-go="models">Review model pipeline</button></aside>
+      </div>
+    </section>
+
+    <section id="results" class="app-section section-page">
+      <div class="workspace-head"><div><span class="kicker">04 / Results</span><h2>Analysis results</h2><p>Expression scores, selected views, and optional session SVM output.</p></div><button class="btn btn-quiet" data-go="analyze">New analysis</button></div>
+      <section class="panel"><div class="panel-head"><h3>Current session</h3><span class="step-label" id="result-time">NO RUN YET</span></div><div class="output-body" id="output" aria-live="polite"><div class="empty-state"><div class="empty-glyph">⌁</div><strong>Your results will appear here</strong><p>Run a sample or submit synchronized camera frames.</p></div></div></section>
+    </section>
+
+    <section id="history" class="app-section section-page">
+      <div class="workspace-head"><div><span class="kicker">05 / Recent runs</span><h2>Local history</h2><p>Only result summaries are stored in this browser. Uploaded images are never stored here.</p></div><button class="btn btn-quiet" id="clear-history">Clear history</button></div>
+      <div class="panel history-panel" id="history-list"><div class="empty-state"><div class="empty-glyph">◷</div><strong>No analyses yet</strong><p>Completed result summaries will appear here.</p></div></div>
+    </section>
+    <footer class="footer"><span>SenseView · Multi-view expression research</span><span>Synthetic demo only · No uploaded images retained</span></footer>
+  </main>
+  <script src="/app.js" defer></script>
+</body>
+</html>

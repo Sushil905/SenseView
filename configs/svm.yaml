@@ -1,0 +1,6 @@
+# Generic exploratory session-level classifier. Supply a de-identified target.
+features: data/features/session_features.csv
+labels: data/session_targets.csv
+target_column: target
+output: runs/checkpoints/session_svm.joblib
+split_by: subject_id
